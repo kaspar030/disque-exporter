@@ -10,11 +10,13 @@ fn main() {
     let listen_address = env::var("DISQUE_EXPORTER_LISTEN_ADDR").unwrap_or("127.0.0.1:8000".into());
     let disque_url =
         env::var("DISQUE_EXPORTER_DISQUE_URL").unwrap_or("redis://localhost:7711".into());
+    let host = env::var("DISQUE_EXPORTER_HOST").unwrap_or(listen_address.clone());
 
     tracing_subscriber::fmt::init();
 
     let builder = PrometheusBuilder::new();
     let handle = builder
+        .add_global_label("host", host)
         .install_recorder()
         .expect("failed to install Prometheus recorder");
 
@@ -36,6 +38,7 @@ fn main() {
 
             let jobs_in = u64::from_redis_value(stats.get("jobs-in").unwrap()).unwrap();
             let jobs_out = u64::from_redis_value(stats.get("jobs-out").unwrap()).unwrap();
+            let len = u64::from_redis_value(stats.get("len").unwrap()).unwrap() as f64;
             let age = u64::from_redis_value(stats.get("age").unwrap()).unwrap() as f64;
             let idle = u64::from_redis_value(stats.get("idle").unwrap()).unwrap() as f64;
             let blocked = u64::from_redis_value(stats.get("blocked").unwrap()).unwrap() as f64;
@@ -46,6 +49,7 @@ fn main() {
             gauge!("queue_age", age, "queue" => name.clone());
             gauge!("queue_blocked", blocked, "queue" => name.clone());
             gauge!("queue_idle", idle, "queue" => name.clone());
+            gauge!("queue_len", len, "queue" => name.clone());
         }
         handle.render()
     }
