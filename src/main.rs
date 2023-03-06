@@ -43,13 +43,13 @@ fn main() {
             let idle = u64::from_redis_value(stats.get("idle").unwrap()).unwrap() as f64;
             let blocked = u64::from_redis_value(stats.get("blocked").unwrap()).unwrap() as f64;
 
-            absolute_counter!("queue_jobs_in", jobs_in, "queue" => name.clone());
-            absolute_counter!("queue_jobs_out", jobs_out, "queue" => name.clone());
+            absolute_counter!("disque_queue_jobs_in_total", jobs_in, "queue" => name.clone());
+            absolute_counter!("disque_queue_jobs_out_total", jobs_out, "queue" => name.clone());
 
-            gauge!("queue_age", age, "queue" => name.clone());
-            gauge!("queue_blocked", blocked, "queue" => name.clone());
-            gauge!("queue_idle", idle, "queue" => name.clone());
-            gauge!("queue_len", len, "queue" => name.clone());
+            gauge!("disque_queue_age_seconds", age, "queue" => name.clone());
+            gauge!("disque_queue_blocked_workers", blocked, "queue" => name.clone());
+            gauge!("disque_queue_idle_seconds", idle, "queue" => name.clone());
+            gauge!("disque_queue_len_jobs", len, "queue" => name.clone());
         }
         handle.render()
     }
