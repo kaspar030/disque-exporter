@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 disque = { git = "https://github.com/kaspar030/disque-rs" }
+gethostname = "0.4.1"
 metrics = "0.20.1"
 metrics-exporter-prometheus = "0.11.0"
 metrics-util = "0.14.0"
